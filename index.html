@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="te">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AI House Planner - Nirmaan AI</title>
+  <link rel="manifest" href="manifest.json"/>
+  <meta name="theme-color" content="#0a1628"/>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Noto+Sans+Telugu:wght@400;600&family=Share+Tech+Mono&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-icon">🏠</div>
+    <div class="logo-text">
+      <h1>AI HOUSE PLANNER</h1>
+      <p>NIRMAAN AI — APP 2 of 10</p>
+    </div>
+  </div>
+  <div class="lang-switcher">
+    <button class="lang-btn active" onclick="setLang('te')">తెలుగు</button>
+    <button class="lang-btn" onclick="setLang('hi')">हिंदी</button>
+    <button class="lang-btn" onclick="setLang('en')">ENG</button>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- STEP 1: PLOT -->
+  <div class="section-card">
+    <div class="section-title">
+      <span class="step-badge">1</span>
+      <span id="lbl-plot">📐 Plot Size ఎంచుకోండి</span>
+    </div>
+    <div class="two-col">
+      <div>
+        <label class="field-label" id="lbl-plotsize">Plot Size</label>
+        <select id="plotSize" onchange="toggleCustomPlot()">
+          <option value="20x30">20×30 ft — 600 sqft</option>
+          <option value="30x40" selected>30×40 ft — 1200 sqft</option>
+          <option value="40x60">40×60 ft — 2400 sqft</option>
+          <option value="50x80">50×80 ft — 4000 sqft</option>
+          <option value="custom">Custom Size</option>
+        </select>
+      </div>
+      <div id="customPlotDiv" style="display:none">
+        <label class="field-label">Length × Width (ft)</label>
+        <div style="display:flex;gap:8px">
+          <input type="number" id="customL" placeholder="Length" value="35" min="10"/>
+          <input type="number" id="customW" placeholder="Width" value="50" min="10"/>
+        </div>
+      </div>
+    </div>
+    <div class="two-col">
+      <div>
+        <label class="field-label" id="lbl-floors">అంతస్తులు</label>
+        <select id="floors">
+          <option value="1">Ground Floor Only</option>
+          <option value="2" selected>G + 1st Floor</option>
+          <option value="3">G + 2 Floors</option>
+        </select>
+      </div>
+      <div>
+        <label class="field-label" id="lbl-facing">ముఖద్వారం దిక్కు</label>
+        <select id="facing">
+          <option value="East">తూర్పు (East) ⭐ Best</option>
+          <option value="North">ఉత్తరం (North) ✅</option>
+          <option value="West">పశ్చిమం (West)</option>
+          <option value="South">దక్షిణం (South)</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 2: ROOMS -->
+  <div class="section-card">
+    <div class="section-title">
+      <span class="step-badge">2</span>
+      <span id="lbl-rooms">🛏️ Rooms Select చేయండి</span>
+    </div>
+    <div class="room-grid" id="roomGrid"></div>
+  </div>
+
+  <!-- STEP 3: BUDGET -->
+  <div class="section-card">
+    <div class="section-title">
+      <span class="step-badge">3</span>
+      <span id="lbl-budget">💰 Budget & నిర్మాణ విధానం</span>
+    </div>
+    <div class="two-col">
+      <div>
+        <label class="field-label" id="lbl-budgetamt">Budget (₹ లక్షలు)</label>
+        <input type="number" id="budgetLakh" value="25" min="5" max="500"/>
+      </div>
+      <div>
+        <label class="field-label" id="lbl-contype">నిర్మాణ రకం</label>
+        <select id="constructionType">
+          <option value="economy">Economy (సాదా)</option>
+          <option value="standard" selected>Standard (మధ్యస్థ)</option>
+          <option value="premium">Premium (మేలు రకం)</option>
+        </select>
+      </div>
+    </div>
+    <div>
+      <label class="field-label" id="lbl-special">ప్రత్యేక అవసరాలు (optional)</label>
+      <input type="text" id="special" placeholder="Ex: Car parking, Terrace garden, Lift..."/>
+    </div>
+  </div>
+
+  <!-- GENERATE BUTTON -->
+  <button class="btn-generate" id="generateBtn" onclick="generatePlan()">
+    🏠 AI House Plan Generate చేయండి
+  </button>
+
+  <!-- LOADER -->
+  <div class="loader-wrap" id="loader">
+    <div class="blueprint-loader"></div>
+    <div class="loader-txt" id="loaderTxt">AI మీ ఇంటి plan తయారు చేస్తోంది...</div>
+  </div>
+
+  <!-- RESULTS -->
+  <div id="result-section">
+
+    <!-- VASTU SCORE -->
+    <div class="section-card" id="vastuCard">
+      <div class="section-title">🔱 Vastu Score</div>
+      <div class="vastu-box">
+        <div class="vastu-meter">
+          <div class="vastu-ring">
+            <svg width="90" height="90" viewBox="0 0 90 90">
+              <circle cx="45" cy="45" r="36" fill="none" stroke="rgba(0,200,150,0.15)" stroke-width="9"/>
+              <circle id="vastuArc" cx="45" cy="45" r="36" fill="none"
+                stroke="#00c896" stroke-width="9" stroke-linecap="round"
+                stroke-dasharray="226" stroke-dashoffset="226"
+                style="transition:stroke-dashoffset 1.2s ease;transform:rotate(-90deg);transform-origin:center"/>
+            </svg>
+            <div class="vastu-score-num" id="vastuNum">0</div>
+          </div>
+          <div class="vastu-label">VASTU SCORE / 10</div>
+        </div>
+        <div class="vastu-tips">
+          <h3 id="vastuTitle">🌿 Vastu Tips</h3>
+          <ul id="vastuList"></ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2D BLUEPRINT -->
+    <div class="section-card">
+      <div class="section-title">📋 2D Blueprint Floor Plan</div>
+      <div class="blueprint-canvas-wrap">
+        <canvas id="blueprintCanvas" width="520" height="400"></canvas>
+      </div>
+    </div>
+
+    <!-- 3D VIEW -->
+    <div class="section-card">
+      <div class="section-title">🧊 3D Isometric View</div>
+      <div class="viz3d-wrap">
+        <div id="scene3d"></div>
+        <div style="text-align:center;margin-top:10px">
+          <button class="rotate-btn" onclick="rotate3d()">🔄 Rotate View</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MATERIAL TABLE -->
+    <div class="section-card">
+      <div class="section-title">🧱 Material Calculator</div>
+      <div class="material-table-wrap">
+        <h3>📦 <span id="matTitle">Telangana Market Rates తో Estimate</span></h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Material</th>
+              <th>Quantity</th>
+              <th>Rate</th>
+              <th>Amount</th>
+            </tr>
+          </thead>
+          <tbody id="matBody"></tbody>
+          <tfoot>
+            <tr>
+              <td colspan="3">🏗️ Total Estimated Cost</td>
+              <td id="matTotal">₹0</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+
+    <!-- AI LAYOUT -->
+    <div class="section-card">
+      <div class="section-title">🤖 AI Layout Suggestions</div>
+      <div class="ai-plan-box">
+        <div class="plan-text" id="aiPlanText"></div>
+      </div>
+    </div>
+
+    <!-- ACTION BUTTONS -->
+    <div class="action-row">
+      <button class="btn-share btn-wa" onclick="shareWhatsApp()">📱 WhatsApp Share</button>
+      <button class="btn-share btn-pdf" onclick="window.print()">🖨️ Print / PDF</button>
+      <button class="btn-share btn-reset" onclick="resetForm()">🔄 New Plan</button>
+    </div>
+
+  </div>
+</div>
+
+<footer>
+  <p>🏗️ Nirmaan AI Suite — App 2 of 10 | AI House Planner | Built for Telangana</p>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
