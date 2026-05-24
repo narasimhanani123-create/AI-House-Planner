@@ -1,4 +1,4 @@
-const GEMINI_KEY = 'AIzaSyAVR5kTj5vm8NsQLLkV-uGTIp7bXN2CL3Y';
+const GEMINI_KEY = 'AIzaSyAC-Z3aJdeudrDwgHR-q6VBd7c4bzSCM7s';
 
 const STRINGS = {
   te: {
