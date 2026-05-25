@@ -1,4 +1,4 @@
-const GEMINI_KEY = 'AIzaSyAC-Z3aJdeudrDwgHR-q6VBd7c4bzSCM7s';
+const GROQ_KEY = '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';
 
 const STRINGS = {
   te: {
