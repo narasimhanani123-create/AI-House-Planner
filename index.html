@@ -28,22 +28,34 @@
 
 <div class="container">
 
-  <!-- STEP 1: PLOT -->
+  <!-- STEP 1: LOCATION -->
   <div class="section-card">
     <div class="section-title">
       <span class="step-badge">1</span>
+      <span id="lbl-location">📍 మీ జిల్లా ఎంచుకోండి</span>
+    </div>
+    <div class="two-col">
+      <div>
+        <label class="field-label" id="lbl-state">రాష్ట్రం</label>
+        <select id="stateSelect" onchange="onStateChange()"></select>
+      </div>
+      <div>
+        <label class="field-label" id="lbl-district">జిల్లా</label>
+        <select id="districtSelect"></select>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 2: PLOT -->
+  <div class="section-card">
+    <div class="section-title">
+      <span class="step-badge">2</span>
       <span id="lbl-plot">📐 Plot Size ఎంచుకోండి</span>
     </div>
     <div class="two-col">
       <div>
         <label class="field-label" id="lbl-plotsize">Plot Size</label>
-        <select id="plotSize" onchange="toggleCustomPlot()">
-          <option value="20x30">20×30 ft — 600 sqft</option>
-          <option value="30x40" selected>30×40 ft — 1200 sqft</option>
-          <option value="40x60">40×60 ft — 2400 sqft</option>
-          <option value="50x80">50×80 ft — 4000 sqft</option>
-          <option value="custom">Custom Size</option>
-        </select>
+        <select id="plotSize" onchange="toggleCustomPlot()"></select>
       </div>
       <div id="customPlotDiv" style="display:none">
         <label class="field-label">Length × Width (ft)</label>
@@ -56,37 +68,28 @@
     <div class="two-col">
       <div>
         <label class="field-label" id="lbl-floors">అంతస్తులు</label>
-        <select id="floors">
-          <option value="1">Ground Floor Only</option>
-          <option value="2" selected>G + 1st Floor</option>
-          <option value="3">G + 2 Floors</option>
-        </select>
+        <select id="floors"></select>
       </div>
       <div>
         <label class="field-label" id="lbl-facing">ముఖద్వారం దిక్కు</label>
-        <select id="facing">
-          <option value="East">తూర్పు (East) ⭐ Best</option>
-          <option value="North">ఉత్తరం (North) ✅</option>
-          <option value="West">పశ్చిమం (West)</option>
-          <option value="South">దక్షిణం (South)</option>
-        </select>
+        <select id="facing"></select>
       </div>
     </div>
   </div>
 
-  <!-- STEP 2: ROOMS -->
+  <!-- STEP 3: ROOMS -->
   <div class="section-card">
     <div class="section-title">
-      <span class="step-badge">2</span>
+      <span class="step-badge">3</span>
       <span id="lbl-rooms">🛏️ Rooms Select చేయండి</span>
     </div>
     <div class="room-grid" id="roomGrid"></div>
   </div>
 
-  <!-- STEP 3: BUDGET -->
+  <!-- STEP 4: BUDGET -->
   <div class="section-card">
     <div class="section-title">
-      <span class="step-badge">3</span>
+      <span class="step-badge">4</span>
       <span id="lbl-budget">💰 Budget & నిర్మాణ విధానం</span>
     </div>
     <div class="two-col">
@@ -96,11 +99,7 @@
       </div>
       <div>
         <label class="field-label" id="lbl-contype">నిర్మాణ రకం</label>
-        <select id="constructionType">
-          <option value="economy">Economy (సాదా)</option>
-          <option value="standard" selected>Standard (మధ్యస్థ)</option>
-          <option value="premium">Premium (మేలు రకం)</option>
-        </select>
+        <select id="constructionType"></select>
       </div>
     </div>
     <div>
@@ -109,7 +108,22 @@
     </div>
   </div>
 
-  <!-- GENERATE BUTTON -->
+  <!-- STEP 5: MARKET RATES -->
+  <div class="section-card">
+    <div class="section-title">
+      <span class="step-badge">5</span>
+      <span id="ratesTitle">💹 Market Rates Edit చేయండి</span>
+    </div>
+    <button class="btn-rates-toggle" id="rateToggleBtn" onclick="toggleRates()">
+      💹 Market Rates Edit చేయండి ▼
+    </button>
+    <div id="ratesPanel" style="display:none">
+      <div class="rates-grid" id="ratesContainer"></div>
+      <button class="btn-reset-rates" onclick="resetRates()">🔄 Default Rates కి Reset చేయండి</button>
+    </div>
+  </div>
+
+  <!-- GENERATE -->
   <button class="btn-generate" id="generateBtn" onclick="generatePlan()">
     🏠 AI House Plan Generate చేయండి
   </button>
@@ -123,7 +137,7 @@
   <!-- RESULTS -->
   <div id="result-section">
 
-    <!-- VASTU SCORE -->
+    <!-- VASTU -->
     <div class="section-card" id="vastuCard">
       <div class="section-title">🔱 Vastu Score</div>
       <div class="vastu-box">
@@ -147,12 +161,13 @@
       </div>
     </div>
 
-    <!-- 2D BLUEPRINT -->
+    <!-- 2D CAD PLAN -->
     <div class="section-card">
-      <div class="section-title">📋 2D Blueprint Floor Plan</div>
+      <div class="section-title">📋 2D CAD Floor Plan</div>
       <div class="blueprint-canvas-wrap">
-        <canvas id="blueprintCanvas" width="520" height="400"></canvas>
+        <canvas id="blueprintCanvas" width="600" height="480"></canvas>
       </div>
+      <div class="plan-legend" id="planLegend"></div>
     </div>
 
     <!-- 3D VIEW -->
@@ -170,15 +185,10 @@
     <div class="section-card">
       <div class="section-title">🧱 Material Calculator</div>
       <div class="material-table-wrap">
-        <h3>📦 <span id="matTitle">Telangana Market Rates తో Estimate</span></h3>
+        <h3>📦 Telangana Market Rates తో Estimate</h3>
         <table>
           <thead>
-            <tr>
-              <th>Material</th>
-              <th>Quantity</th>
-              <th>Rate</th>
-              <th>Amount</th>
-            </tr>
+            <tr><th>Material</th><th>Quantity</th><th>Rate</th><th>Amount</th></tr>
           </thead>
           <tbody id="matBody"></tbody>
           <tfoot>
@@ -199,7 +209,7 @@
       </div>
     </div>
 
-    <!-- ACTION BUTTONS -->
+    <!-- ACTIONS -->
     <div class="action-row">
       <button class="btn-share btn-wa" onclick="shareWhatsApp()">📱 WhatsApp Share</button>
       <button class="btn-share btn-pdf" onclick="window.print()">🖨️ Print / PDF</button>
@@ -210,11 +220,9 @@
 </div>
 
 <footer>
-  <p>🏗️ Nirmaan AI Suite — App 2 of 10 | AI House Planner | Built for Telangana</p>
+  <p>🏗️ Nirmaan AI Suite — App 2 of 10 | AI House Planner | Built for India</p>
 </footer>
-
 <div class="toast" id="toast"></div>
-
 <script src="app.js"></script>
 </body>
 </html>
